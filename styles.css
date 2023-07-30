@@ -1,13 +1,13 @@
-*{
+* {
   background: rgb(95, 95, 99);
   margin: 0;
   border: 1px solid rgb(194, 194, 0);
 }
 
-h1{
-  color: white;
+canvas {
+  background: black;
 }
 
-canvas{
-  background: black;
+.message {
+  color: white;
 }
