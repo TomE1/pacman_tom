@@ -111,7 +111,8 @@ function animate() {
   c.clearRect(0, 0, canvas.width, canvas.height);
 
   if (keys.w.pressed && lastKey === 'w') {
-    boundaries.forEach((boundary) => {
+    for (let i = 0; i < boundaries.length; i++) {
+      const boundary = boundaries[i]
       if (
         circleCollidesWithRectangle({
           circle: {
@@ -119,16 +120,17 @@ function animate() {
             velocity: {
               x: 0,
               y: -5,
-            },
+            }
           },
-          rectangle: boundary,
+          rectangle: boundary
         })
       ) {
         player.velocity.y = 0;
+        break
       } else {
-        player.velocity = -5;
+        player.velocity.y = -5;
       }
-    });
+    }
   } else if (keys.a.pressed && lastKey === 'a') {
     player.velocity.x = -5;
   } else if (keys.s.pressed && lastKey === 's') {
