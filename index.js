@@ -48,7 +48,7 @@ class Ghost {
     this.velocity = velocity;
     this.radius = 15;
     this.color = color;
-    this.prevCollisions = []
+    this.prevCollisions = [];
   }
 
   draw() {
@@ -546,10 +546,24 @@ function animate() {
     });
 
     if (collisions.length > ghost.prevCollisions.length)
-    ghost.prevCollisions = collisions
+      ghost.prevCollisions = collisions;
 
-    if (collisions !== ghost.prevCollisions){
-      console.log("no go");
+    if (JSON.stringify(collisions) !== JSON.stringify(ghost.prevCollisions)) {
+      console.log('no go');
+
+      console.log(collisions);
+      console.log(ghost.prevCollisions);
+
+      if (ghost.velocity.x > 0) ghost.prevCollisions.push('right')
+      else if (ghost.velocity.x < 0) ghost.prevCollisions.push('left')
+      else if (ghost.velocity.y < 0) ghost.prevCollisions.push('up')
+      else if (ghost.velocity.y > 0) ghost.prevCollisions.push('down')
+
+      const pathways = ghost.prevCollisions.filter((collision) => {
+        return !collisions.includes(collision);
+      });
+      console.log({ pathways });
+      const direction = pathways[Math.random() * pathways.length]
     }
 
     // console.log(collisions);
