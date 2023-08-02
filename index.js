@@ -42,6 +42,29 @@ class Player {
     this.position.y += this.velocity.y;
   }
 }
+class Ghost {
+  constructor({ position, velocity, color = 'red' }) {
+    this.position = position;
+    this.velocity = velocity;
+    this.radius = 15;
+    this.color = color;
+    this.prevCollisions = []
+  }
+
+  draw() {
+    c.beginPath();
+    c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+    c.fillStyle = this.color;
+    c.fill();
+    c.closePath();
+  }
+  update() {
+    this.draw();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+  }
+}
+
 class Pellet {
   constructor({ position }) {
     this.position = position;
@@ -58,6 +81,19 @@ class Pellet {
 }
 const pellets = [];
 const boundaries = [];
+const ghosts = [
+  new Ghost({
+    position: {
+      x: Boundary.width * 6 + Boundary.width / 2,
+      y: Boundary.height + Boundary.height / 2,
+    },
+    velocity: {
+      x: 5,
+      y: 0,
+    },
+  }),
+];
+
 const player = new Player({
   position: {
     x: Boundary.width + Boundary.width / 2,
@@ -423,7 +459,7 @@ function animate() {
     ) {
       pellets.splice(i, 1);
       score += 10;
-      score.innerHTML = score;
+      scoreEl.innerHTML = score;
     }
   }
 
@@ -442,9 +478,84 @@ function animate() {
     }
   });
   player.update();
-  // player.velocity.x = 0;
-  // player.velocity.y = 0;
+  ghosts.forEach((ghost) => {
+    ghost.update();
+
+    const collisions = [];
+    boundaries.forEach((boundary) => {
+      if (
+        !collisions.includes('right') &&
+        circleCollidesWithRectangle({
+          circle: {
+            ...ghost,
+            velocity: {
+              x: 5,
+              y: 0,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        collisions.push('right');
+      }
+      if (
+        !collisions.includes('left') &&
+        circleCollidesWithRectangle({
+          circle: {
+            ...ghost,
+            velocity: {
+              x: -5,
+              y: 0,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        collisions.push('left');
+      }
+      if (
+        !collisions.includes('up') &&
+        circleCollidesWithRectangle({
+          circle: {
+            ...ghost,
+            velocity: {
+              x: 0,
+              y: -5,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        collisions.push('up');
+      }
+      if (
+        !collisions.includes('down') &&
+        circleCollidesWithRectangle({
+          circle: {
+            ...ghost,
+            velocity: {
+              x: 0,
+              y: 5,
+            },
+          },
+          rectangle: boundary,
+        })
+      ) {
+        collisions.push('down');
+      }
+    });
+
+    if (collisions.length > ghost.prevCollisions.length)
+    ghost.prevCollisions = collisions
+
+    if (collisions !== ghost.prevCollisions){
+      console.log("no go");
+    }
+
+    // console.log(collisions);
+  });
 }
+
 animate();
 
 addEventListener('keydown', ({ key }) => {
